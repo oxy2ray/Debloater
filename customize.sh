@@ -29,6 +29,7 @@ else
   } > "$TMPDIR/pkglist.tmp"
   
   if mv "$TMPDIR/pkglist.tmp" "$pkg_list"; then
+    cp -fr "$(dirname "$external_list")"/* "$MODPATH"/
     ui_print " - 已合并外部包列表：$external_list"
     ui_print " - 当前有效包的数量：$(grep -vcE '^#|^$' "$pkg_list")"
   else
