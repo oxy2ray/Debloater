@@ -14,18 +14,30 @@ if [ ! -f "$external_list" ]; then
   ui_print " - 首次安装"
 else
   ui_print " - 找到了已安装模块"
-  grep -E '^#|^$' "$pkg_list"
-  cat "$pkg_list" "$external_list" | grep -vE '^#|^$' | sort | uniq > "$TMPDIR/pkglist.tmp"
-    if mv "$TMPDIR/pkglist.tmp" "$pkg_list"; then
-     ui_print " - 已合并外部包列表：$external_list"
-     ui_print " - 当前有效包的数量：$(grep -vcE '^#|^$' "$pkg_list")"
-    else
-        ui_print " - 错误: 无法与已存在的模块合并"
-        ui_print " - 建议: 尝试卸载已安装的旧模块。"
-        abort
-    fi
+  dos2unix "$pkg_list" "$external_list" 2>/dev/null
+  {
+    grep -vE '^#|^$' "$pkg_list" | tr -s '\n'
+    grep -vE '^#|^$' "$external_list" | tr -s '\n'
+  } | awk 'NF' > "$TMPDIR/pkglist.tmp"
+
+  awk '!seen[$0]++' "$TMPDIR/pkglist.tmp" > "$TMPDIR/newlist.tmp"
+
+  {
+    grep -E '^#|^$' "$pkg_list"
+    awk '{print $0}' "$TMPDIR/newlist.tmp"
+    echo
+  } > "$TMPDIR/pkglist.tmp"
+  
+  if mv "$TMPDIR/pkglist.tmp" "$pkg_list"; then
+    ui_print " - 已合并外部包列表：$external_list"
+    ui_print " - 当前有效包的数量：$(grep -vcE '^#|^$' "$pkg_list")"
+  else
+    ui_print " - 错误: 无法与已存在的模块合并"
+    ui_print " - 建议: 尝试卸载已安装的旧模块。"
+    abort
+  fi
 fi
-grep -v '^#' "$pkg_list" | while read -r pkg_name; do
+grep -v '^#' "$pkg_list" | grep -v "^$" | while read -r pkg_name; do
   if ! pm list packages "$pkg_name" | grep -q "^package:${pkg_name}$"; then
     ui_print " - 找不到: ($pkg_name), 跳过。"
     continue
@@ -48,9 +60,9 @@ grep -v '^#' "$pkg_list" | while read -r pkg_name; do
       apk_path=$(pm path "$pkg_name" 2>/dev/null | sed 's/package://g')
       continue
     elif echo "$apk_path" | grep -Eq "$not_system"; then
-      partition=$(echo "$apk_path" | sed -nE "s|^/(product|vendor|odm|system_ext)/.*|\1|p")
+      partition=$(echo "$apk_path" | grep -oE '^/(product|vendor|odm|system_ext)/' | cut -d/ -f2)
       sub_path=$(echo "$apk_path" | sed -E "s|^/$partition/?||")
-      apk_path="/system/$partition$sub_path"
+      apk_path="/system/$partition/$sub_path"
       break
     else
       break
