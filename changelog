@@ -1,9 +1,9 @@
---- v1.3 ---
-We are seriously doomed guys
---- v1.2 ---
-We are doomed guys
---- v1.1 ---
-Fixed a bunch of problem when install in kernel su. Although i said "fix", i only tested it on mksu, on official kernel su it should be perform like normal. But who knows?
---- v1.0 ---
-No guarantees. It works on my machine.
+# --- v1.3 ---
+We are seriously doomed guys  
+# --- v1.2 ---
+We are doomed guys  
+# --- v1.1 ---
+Fixed a bunch of problem when install in kernel su. Although i said "fix", i only tested it on mksu, on official kernel su it should be perform like normal. But who knows?  
+# --- v1.0 ---
+No guarantees. It works on my machine.  
 I don't take any possible responsibility of breaking your device, system, or any property loss. i mean, its just a zip file, unzip it and check all those file isn't that so hard, right?
