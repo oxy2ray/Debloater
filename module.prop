@@ -1,7 +1,7 @@
 id=Debloater
 name=System Debloater
-version=1.3
-versionCode=1300
+version=1.4
+versionCode=1400
 author=Zer0in
 description=A simple debloater that keeps you away from adware.
 updateJson=https://raw.githubusercontent.com/oxy2ray/Debloater/main/update.json
